@@ -1,27 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ButtonMovement : MonoBehaviour
 {
-    public List<Sprite> buttonSprites; // List of sprites to use for the buttons
     public Transform startPosition;   // Starting position of the buttons
     public Transform endPosition;     // Ending position of the buttons
-    public float movementSpeed = 2f;   // Speed of the buttons' movement
+    public float movementSpeed;   // Speed of the buttons' movement
 
-    public float minAppearDelay = 1f;  // Minimum delay before button appears
-    public float maxAppearDelay = 3f;  // Maximum delay before button appears
-    private bool isMoving;            // Flag to track button movement status
+    //private float minAppearDelay = 1f;  // Minimum delay before button appears
+    //private float maxAppearDelay = 3f;  // Maximum delay before button appears
+    public bool isMoving;            // Flag to track button movement status
+    public bool is_recyclable = true;
+    public bool is_active=true;
 
-    private Image MainImage;
-
-    private void Start()
+    void Start()
     {
-        MainImage = GetComponent<Image>();
-
-        // Call the function to make the button appear randomly
-        RandomAppear();
+        movementSpeed = MusicManager.instance.triggrs_speed;
     }
 
     void Update()
@@ -29,22 +24,28 @@ public class ButtonMovement : MonoBehaviour
         // Move the button from start to end position only if it's active
         if (isMoving)
         {
-            float step = movementSpeed * Time.deltaTime;
+            float step = movementSpeed * 10 * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, endPosition.position, step);
+
+            if (is_active && transform.position.x < AcceptCircleScrpt.instance.transform.position.x - 50)
+            {
+                MusicManager.instance.Message("missed", 50, 50, 50);
+                is_active = false;
+            }
 
             // If the button reaches the end position, hide it and make it appear randomly again
             if (Vector3.Distance(transform.position, endPosition.position) < 0.001f)
             {
-                gameObject.SetActive(false);
+                transform.position = startPosition.position;
+                is_recyclable = true;
                 isMoving = false;
-
-                // Call the function to make the button appear randomly
-                RandomAppear();
+                is_active = true;
             }
         }
     }
 
     // Function to make the button appear randomly
+    /*
     private void RandomAppear()
     {
         // Calculate a random delay before the button appears
@@ -53,9 +54,11 @@ public class ButtonMovement : MonoBehaviour
         // Use a coroutine to delay the appearance of the button
         StartCoroutine(DelayedAppear(appearDelay));
     }
+    */
 
     // Coroutine to set the button active after a delay
-    private System.Collections.IEnumerator DelayedAppear(float delay)
+    /*
+    private IEnumerator DelayedAppear(float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -71,4 +74,5 @@ public class ButtonMovement : MonoBehaviour
             MainImage.sprite = buttonSprites[randomIndex];
         }
     }
+    */
 }

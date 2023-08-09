@@ -22,6 +22,7 @@ public class Hydraulics : MonoBehaviour
 
     void Update()
     {
+        /*
         if(Input.GetButtonDown("AllUp") && !IsOn)
         {
             FrontLeft.suspensionDistance = FrontRight.suspensionDistance = RearLeft.suspensionDistance = RearRight.suspensionDistance = LowDistance;
@@ -58,5 +59,6 @@ public class Hydraulics : MonoBehaviour
         {
             FrontLeft.suspensionDistance = FrontRight.suspensionDistance = RearLeft.suspensionDistance = RearRight.suspensionDistance = OriginalDistance;
         }
+        */
     }
 }
