@@ -7,6 +7,8 @@ left
 1
 right
 5
+s
+30
 left
 1
 right

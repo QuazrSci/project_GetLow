@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System;
 using UnityEngine.UI;
 using TMPro;
 
@@ -20,6 +18,8 @@ public class MusicManager : MonoBehaviour
     private ButtonMovement[] triggr_mov;
     [SerializeField]
     private Image[] triggr_img;
+
+    Transform startPos;
 
     public TextMeshProUGUI messageObj;
     public AnimationCurve lerpCurve;
@@ -39,14 +39,18 @@ public class MusicManager : MonoBehaviour
         messageObj.alpha = 0;
     }
 
-    void Start() //read the music profile
+    void Start()
     {
+        startPos = triggers[0].GetComponent<ButtonMovement>().startPosition;
+
         for (int i = 0; i <= triggers.Length-1; i++)
         {
             triggr_mov[i] = triggers[i].GetComponent<ButtonMovement>();
             triggr_img[i] = triggers[i].GetComponent<Image>();
-        }
 
+            triggers[i].transform.position = startPos.position;
+        }
+        //read the music profile
         lines = File.ReadAllLines(Application.dataPath + "/Music Profiles/" + MusicProfile.name + ".txt");
         
         //foreach (string line in lines) { Debug.Log(line); }
@@ -95,10 +99,11 @@ public class MusicManager : MonoBehaviour
             {
                 is_found = false;
                 //trying to find a recyclable trigger
-                for (int a=0; a < triggers.Length;a++)
+                for (int a = 0; a < triggers.Length; a++)
                 {
-                    if(triggr_mov[a].is_recyclable)
+                    if (triggr_mov[a].is_recyclable)
                     {
+                        triggr_mov[a].direction = lines[i];
                         // changing a sprite
                         switch (lines[i])
                         {
@@ -125,10 +130,16 @@ public class MusicManager : MonoBehaviour
                         a = triggers.Length;
                     }
                 }
-                if(is_found == false) { Debug.LogError("Recyclable Trigger is not found"); }
+                if (is_found == false) { Debug.LogError("Recyclable Trigger is not found"); }
 
                 //if, theres is no "recyclable trigger" ?
 
+            }
+            //if line is = change speed
+            else if (lines[i] == "s")
+            {
+                i++;
+                changeSpeed(float.Parse(lines[i]));
             }
             //if line is a time
             else if (line_int > 0 && line_int < 10)
@@ -140,5 +151,14 @@ public class MusicManager : MonoBehaviour
         }
         Debug.Log("!! MUSIC IS OVER !!");
         yield return 0;
+    }
+
+    void changeSpeed(float speed)
+    {
+        triggrs_speed = speed;
+        for (int i = 0; i <= triggers.Length - 1; i++)
+        {
+            triggr_mov[i].movementSpeed = speed;
+        }
     }
 }

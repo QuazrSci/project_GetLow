@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ButtonMovement : MonoBehaviour
@@ -13,6 +12,7 @@ public class ButtonMovement : MonoBehaviour
     public bool isMoving;            // Flag to track button movement status
     public bool is_recyclable = true;
     public bool is_active=true;
+    public string direction;
 
     void Start()
     {

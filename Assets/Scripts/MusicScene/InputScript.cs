@@ -21,19 +21,19 @@ public class InputScript : MonoBehaviour
 
     private void OnEnable()
     {
-        touchTrigger.performed += TouchFunc;
+        //touchTrigger.performed += TouchFunc;
     }
 
     private void OnDisable()
     {
-        touchTrigger.performed -= TouchFunc;
+        //touchTrigger.performed -= TouchFunc;
     }
 
     private void TouchFunc(InputAction.CallbackContext context)
     {
         //bool touch = context.ReadValueAsButton();
         //Debug.Log("Main Touch: " + touch);
-        AcceptScr.AcceptTrigger();
+        //AcceptScr.AcceptTrigger();
     }
 
 }

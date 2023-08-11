@@ -25,7 +25,7 @@ public class AcceptCircleScrpt : MonoBehaviour
         origScale = transform.localScale;
     }
 
-    public void AcceptTrigger()
+    public void AcceptTrigger(string InputDirection)
     {
         int triggrNum = -1;
         float xDis = 2000;
@@ -38,16 +38,20 @@ public class AcceptCircleScrpt : MonoBehaviour
                 triggrNum = i;
             }
         }
-        if(triggrNum!=-1)
+        if(triggrNum!=-1 && xDis < transform.position.x)
         {
             Debug.Log(xDis + " | " + transform.position.x + "|" + triggr[triggrNum].transform.position.x + "||i=" + triggrNum);
             triggr[triggrNum].GetComponent<ButtonMovement>().is_active = false;
-        }
-        if (xDis < -50 || xDis > 50) { MusicManager.instance.Message("missed", 50, 50, 50); }
-        else if (xDis < -40 || xDis > 40) { MusicManager.instance.Message("Ok", 0, 200, 255); }
-        else if (xDis < -20 || xDis > 20) { MusicManager.instance.Message("Good!", 0, 255, 50); }
-        else if (xDis < -4 || xDis > 4) { MusicManager.instance.Message("Amazing!", 220, 0, 255); }
-        else { MusicManager.instance.Message("God!", 255, 200, 0); }
+
+            if (xDis < -50 || xDis > 50 || triggr[triggrNum].GetComponent<ButtonMovement>().direction != InputDirection)
+            { MusicManager.instance.Message("missed", 50, 50, 50); }
+            else if (xDis < -40 || xDis > 40) { MusicManager.instance.Message("Ok", 0, 200, 255); }
+            else if (xDis < -20 || xDis > 20) { MusicManager.instance.Message("Good!", 0, 255, 50); }
+            else if (xDis < -4 || xDis > 4) { MusicManager.instance.Message("Amazing!", 220, 0, 255); }
+            else { MusicManager.instance.Message("God!", 255, 200, 0); }
+        } 
+        else MusicManager.instance.Message("missed", 50, 50, 50);
+
 
         StopCoroutine(AcceptEffect());
         StartCoroutine(AcceptEffect());
