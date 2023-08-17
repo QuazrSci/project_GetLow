@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
 
 public class MusicManager : MonoBehaviour
 {
@@ -10,21 +11,22 @@ public class MusicManager : MonoBehaviour
     //DONT USE INSTANCE IN AWAKE FUNCTION (in other scripts)
 
     [SerializeField]
-    private TextAsset MusicProfile;
+    private GameInfoManager gameInfoMngr;
     [SerializeField]
     private Sprite[] buttonSprites; // List of sprites to use for the buttons
     public GameObject[] triggers;
-    [SerializeField]
     private ButtonMovement[] triggr_mov;
-    [SerializeField]
     private Image[] triggr_img;
-
+    [SerializeField]
+    private FinalScreen finScreen;
+    
     Transform startPos;
 
     public TextMeshProUGUI messageObj;
     public AnimationCurve lerpCurve;
 
     public float triggrs_speed = 10;
+    private float resSpeedmult; //multiplier of the speed based on a resolution of the screen
     string[] lines;
 
     void Awake()
@@ -37,12 +39,15 @@ public class MusicManager : MonoBehaviour
         foreach(GameObject trigger in triggers) trigger.GetComponent<ButtonMovement>().isMoving = false;
 
         messageObj.alpha = 0;
+        resSpeedmult = Screen.currentResolution.width / 400;
+        triggrs_speed *= resSpeedmult;
     }
 
     void Start()
     {
         startPos = triggers[0].GetComponent<ButtonMovement>().startPosition;
-
+        triggr_img = new Image[triggers.Length];
+        triggr_mov = new ButtonMovement[triggers.Length];
         for (int i = 0; i <= triggers.Length-1; i++)
         {
             triggr_mov[i] = triggers[i].GetComponent<ButtonMovement>();
@@ -51,9 +56,9 @@ public class MusicManager : MonoBehaviour
             triggers[i].transform.position = startPos.position;
         }
         //read the music profile
-        lines = File.ReadAllLines(Application.dataPath + "/Music Profiles/" + MusicProfile.name + ".txt");
-        
-        //foreach (string line in lines) { Debug.Log(line); }
+        lines = File.ReadAllLines(Application.dataPath + "/Music Profiles/" + gameInfoMngr.songName + ".txt");
+
+        finScreen.gameObject.SetActive(false);
 
         StartCoroutine(Music());
     }
@@ -149,13 +154,36 @@ public class MusicManager : MonoBehaviour
             else Debug.LogError("Something is wrong with music profile!");
             i++;
         }
-        Debug.Log("!! MUSIC IS OVER !!");
+
+        stopMusic();
+
         yield return 0;
+    }
+
+    async void stopMusic()
+    {   
+        bool is_done = false;
+        int count;
+        while(!is_done)
+        {
+            count = 0;
+            for(int i=0;i<triggers.Length;i++)
+            {
+                if(triggr_mov[i].isMoving == false) count++;
+            }
+            if(count == triggers.Length) is_done = true;
+            await Task.Delay(100);
+        }
+
+        Debug.Log("!! MUSIC IS OVER !!");
+
+        finScreen.gameObject.SetActive(true);
+        finScreen.screenPopUp(1f);
     }
 
     void changeSpeed(float speed)
     {
-        triggrs_speed = speed;
+        triggrs_speed = speed*resSpeedmult;
         for (int i = 0; i <= triggers.Length - 1; i++)
         {
             triggr_mov[i].movementSpeed = speed;

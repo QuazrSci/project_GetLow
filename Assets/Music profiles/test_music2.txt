@@ -1,0 +1,12 @@
+4
+up
+1
+up
+1
+up
+4
+s
+50
+down
+1
+down

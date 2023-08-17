@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ButtonMovement : MonoBehaviour
 {
+    PointsManager pointsMngr;
+
     public Transform startPosition;   // Starting position of the buttons
     public Transform endPosition;     // Ending position of the buttons
     public float movementSpeed;   // Speed of the buttons' movement
@@ -16,6 +18,7 @@ public class ButtonMovement : MonoBehaviour
 
     void Start()
     {
+        pointsMngr = MusicManager.instance.GetComponent<PointsManager>();
         movementSpeed = MusicManager.instance.triggrs_speed;
     }
 
@@ -27,8 +30,10 @@ public class ButtonMovement : MonoBehaviour
             float step = movementSpeed * 10 * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, endPosition.position, step);
 
+            //if it reaches the accept circle
             if (is_active && transform.position.x < AcceptCircleScrpt.instance.transform.position.x - 50)
             {
+                pointsMngr.AddPoints(0, "missed");
                 MusicManager.instance.Message("missed", 50, 50, 50);
                 is_active = false;
             }

@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using UnityEngine.UI;
+using TMPro;
 
 public class SceneLoadManager : MonoBehaviour
 {
@@ -10,7 +12,11 @@ public class SceneLoadManager : MonoBehaviour
     GameObject loadIcon;
     CanvasGroup loadScreenCanvas;
     CanvasGroup confirmExitCanvas;
+    [SerializeField]
+    public TextMeshProUGUI confirm_text;
 
+    public Button confirm_yes;
+    public Button confirm_no;
 
     [SerializeField]
     float minLoadTime = 1f;
@@ -18,6 +24,8 @@ public class SceneLoadManager : MonoBehaviour
     AnimationCurve lerpCurve;
     float fadeTime = 0.3f;
     bool is_done;
+
+    string sceneName;
 
     private void Awake()
     {
@@ -32,21 +40,51 @@ public class SceneLoadManager : MonoBehaviour
         confirmExitCanvas = transform.Find("ConfirmExit").GetComponent<CanvasGroup>();
         loadIcon = loadScreenCanvas.transform.Find("Load").gameObject;
         loadScreenCanvas.alpha = 0;
-        GetComponent<Canvas>().sortingOrder = 0;
+        confirmExitCanvas.alpha = 0;
+        loadScreenCanvas.gameObject.SetActive(false);
+    }
+
+    private void Start()
+    {
+        GetComponent<Canvas>().sortingOrder = 2;
+        //confirm buttons
+        confirm_yes = confirmExitCanvas.transform.Find("Yes").GetComponent<Button>();
+        confirm_yes.onClick.AddListener(LoadScene);
+        confirm_no = confirmExitCanvas.transform.Find("No").GetComponent<Button>();
+        confirm_no.onClick.AddListener(ConfirmOff);
+
+        confirmExitCanvas.gameObject.SetActive(false);
+    }
+
+    public void ChangeScene(string scene, bool is_confirm, string messg)
+    {
+        sceneName = scene;
+
+        if (is_confirm)
+        {
+            confirm_text.text = messg;
+            ConfirmOn();
+        }
+        else
+        {
+            LoadScene();
+        }
     }
 
     public void ConfirmOn()
     {
+        confirmExitCanvas.gameObject.SetActive(true);
         StartCoroutine(ConfirmAlphaLerp(0, 1));
     }
 
-    public void ConfirmOff()
+    void ConfirmOff()
     {
         StartCoroutine(ConfirmAlphaLerp(1, 0));
     }
 
     IEnumerator ConfirmAlphaLerp(float from, float to)
     {
+        GetComponent<Canvas>().sortingOrder = 2;
         float timeElapsed = 0f;
         float duration = 0.4f;
         while (timeElapsed < duration)
@@ -59,44 +97,63 @@ public class SceneLoadManager : MonoBehaviour
             yield return null;
         }
         confirmExitCanvas.alpha = to;
+        if (to == 0)
+        {
+            confirmExitCanvas.gameObject.SetActive(false);
+            GetComponent<Canvas>().sortingOrder = 0;
+        }
     }
 
-    public async void LoadScene(string SceneName)
+    public async void LoadScene()
     {
-        is_done = false;
-        AsyncOperation scene =  SceneManager.LoadSceneAsync(SceneName);
+        //start loading the scene
+        AsyncOperation scene =  SceneManager.LoadSceneAsync(sceneName);
         scene.allowSceneActivation = false;
+
+        is_done = false;
+        loadScreenCanvas.gameObject.SetActive(true);
         GetComponent<Canvas>().sortingOrder = 1;
         loadScreenCanvas.alpha = 0;
         StartCoroutine(LoadAniamtion());
-        int i = (int) fadeTime * 1000;
-        float incrs =  (i / 5 / 1000);
+
+        float i=0;
+        float alpha=0;
         //Load screen Appear
-        do
+        while (alpha < 1)
         {
-            await Task.Delay(555);
-            loadScreenCanvas.alpha += incrs;
-            i -= 5;
-        } while (i > 0);
+            await Task.Delay(4);
+            loadScreenCanvas.alpha = alpha;
+            i += Time.deltaTime * fadeTime;
+            alpha += i;
+        }
+        loadScreenCanvas.alpha = 1;
+        if (confirmExitCanvas.gameObject.activeInHierarchy) confirmExitCanvas.gameObject.SetActive(false);
 
-        do
+        //allow to load up scene
+        scene.allowSceneActivation = true;
+
+
+        //wait until the scene is loaded
+        while (scene.progress < 0.9f)
         {
-            await Task.Delay(50);
-        } while (scene.progress < 0.9f);
+            await Task.Delay(300);
+        }
 
-        i = (int) fadeTime * 1000;
+        i=0;
+        alpha = 1;
         //Load screen Fade
-        do
+        while (loadScreenCanvas.alpha > 0)
         {
-            await Task.Delay(5);
-            loadScreenCanvas.alpha -= incrs;
-            i -= 5;
-        } while (i > 0);
+            await Task.Delay(4);
+            loadScreenCanvas.alpha = alpha;
+            i += Time.deltaTime * fadeTime;
+            alpha -= i;
+        }
 
         loadScreenCanvas.alpha = 0;
+        loadScreenCanvas.gameObject.SetActive(false);
         GetComponent<Canvas>().sortingOrder = 0;
         is_done = true;
-        scene.allowSceneActivation = true;
     }
 
     IEnumerator LoadAniamtion()
@@ -108,6 +165,6 @@ public class SceneLoadManager : MonoBehaviour
             loadIcon.transform.Rotate(new Vector3(0, 0, 5));
             yield return new WaitForFixedUpdate();
             duration -= 0.02f;
-        } while (duration > 0 && is_done);
+        } while (duration > 0 && !is_done);
     }
 }
