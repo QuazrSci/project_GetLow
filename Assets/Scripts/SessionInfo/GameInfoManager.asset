@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa016df2b3350f4996bd07af70bd2c4, type: 3}
   m_Name: GameInfoManager
   m_EditorClassIdentifier: 
-  songName: 
+  songName: test_music
   currentCarID: 1
   cars:
   - {fileID: 100042, guid: 0e7ee4df08df88c4880f43398f9ad2c2, type: 3}
-  - {fileID: 166318, guid: 11162c9a6f982554aa6f8af2757c0e0c, type: 3}
+  - {fileID: 6659841202107065152, guid: 11162c9a6f982554aa6f8af2757c0e0c, type: 3}
+  musicClips:
+  - {fileID: 8300000, guid: bb12314e50a1a50488862ee939d283ca, type: 3}
+  - {fileID: 8300000, guid: bd9566abdbf08834281bfb4ea8b92a5d, type: 3}

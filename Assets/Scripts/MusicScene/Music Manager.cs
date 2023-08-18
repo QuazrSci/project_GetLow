@@ -10,24 +10,23 @@ public class MusicManager : MonoBehaviour
     public static MusicManager instance { get; private set; }
     //DONT USE INSTANCE IN AWAKE FUNCTION (in other scripts)
 
-    [SerializeField]
-    private GameInfoManager gameInfoMngr;
-    [SerializeField]
-    private Sprite[] buttonSprites; // List of sprites to use for the buttons
+    [SerializeField] private GameInfoManager gameInfoMngr;
+    [SerializeField] private Sprite[] buttonSprites; // List of sprites to use for the buttons
+
     public GameObject[] triggers;
     private ButtonMovement[] triggr_mov;
     private Image[] triggr_img;
-    [SerializeField]
-    private FinalScreen finScreen;
-    
-    Transform startPos;
 
+    [SerializeField] private FinalScreen finScreen;
+    private AudioSource AudioSrc;
+
+    private Transform startPos;
     public TextMeshProUGUI messageObj;
     public AnimationCurve lerpCurve;
 
     public float triggrs_speed = 10;
     private float resSpeedmult; //multiplier of the speed based on a resolution of the screen
-    string[] lines;
+    private string[] lines;
 
     void Awake()
     {
@@ -37,6 +36,18 @@ public class MusicManager : MonoBehaviour
 
         //deactivates all the triggers
         foreach(GameObject trigger in triggers) trigger.GetComponent<ButtonMovement>().isMoving = false;
+
+        //find music Clip
+        AudioSrc = GetComponent<AudioSource>();
+        for(int i=0; i < gameInfoMngr.musicClips.Length; i++)
+        {
+            if(gameInfoMngr.musicClips[i].name == gameInfoMngr.songName) 
+            {
+                AudioSrc.clip = gameInfoMngr.musicClips[i];
+                AudioSrc.Stop();
+            }
+        } 
+        if(AudioSrc.clip == null) Debug.LogError("SONG ISN'T FOUND! There isn't music with name: " + gameInfoMngr.songName);
 
         messageObj.alpha = 0;
         resSpeedmult = Screen.currentResolution.width / 400;
@@ -60,7 +71,7 @@ public class MusicManager : MonoBehaviour
 
         finScreen.gameObject.SetActive(false);
 
-        StartCoroutine(Music());
+        MusicDelay(2000);
     }
 
     public void Message(string text, int r, int g, int b)
@@ -87,8 +98,23 @@ public class MusicManager : MonoBehaviour
         messageObj.alpha = 0;
     }
 
+    async void MusicDelay(int waitMilSec)
+    {
+        await Task.Delay(waitMilSec/3);
+
+        await Task.Delay(waitMilSec/3);
+
+        await Task.Delay(waitMilSec/3);
+        
+
+        //start music
+        StartCoroutine(Music());
+    }
+
     IEnumerator Music()
     {
+        AudioSrc.Play();
+
         int i = 0;
         float line_int;
         bool is_found = false;
@@ -156,9 +182,9 @@ public class MusicManager : MonoBehaviour
         }
 
         stopMusic();
-
         yield return 0;
     }
+
 
     async void stopMusic()
     {   
@@ -176,9 +202,19 @@ public class MusicManager : MonoBehaviour
         }
 
         Debug.Log("!! MUSIC IS OVER !!");
-
+        StartCoroutine(musicFade());
         finScreen.gameObject.SetActive(true);
         finScreen.screenPopUp(1f);
+    }
+
+    [SerializeField] float music_fade_min=0.4f;
+    IEnumerator musicFade()
+    {
+        while(AudioSrc.volume > music_fade_min)
+        {
+            AudioSrc.volume -= Time.deltaTime;
+            yield return null;
+        }
     }
 
     void changeSpeed(float speed)

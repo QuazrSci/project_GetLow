@@ -311,6 +311,39 @@ MonoBehaviour:
   btnRight: {fileID: 323075981}
   btnLeft: {fileID: 1278171680}
   disBetween: 5
+  lerpCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0012626648
+      value: 0
+      inSlope: -0.03533979
+      outSlope: -0.03533979
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.8216683
+    - serializedVersion: 3
+      time: 0.20288795
+      value: 0.112218365
+      inSlope: 1.5864441
+      outSlope: 1.5864441
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.10091237
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &323075979
 GameObject:
   m_ObjectHideFlags: 0

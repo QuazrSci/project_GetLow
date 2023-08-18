@@ -5,8 +5,8 @@ using UnityEngine;
 public class AcceptCircleScrpt : MonoBehaviour
 {
     public static AcceptCircleScrpt instance { get; private set; }
-    [SerializeField]
-    private GameObject[] triggr;
+    [SerializeField] private Hydraulics hydraulics;
+    [SerializeField] private GameObject[] triggr;
     private PointsManager pointsMngr;
 
     public AnimationCurve lerpCurve;
@@ -57,7 +57,10 @@ public class AcceptCircleScrpt : MonoBehaviour
         } 
         else MusicManager.instance.Message("missed", 50, 50, 50);
 
+        //hydrailics animation
+        hydraulics.wheelJump(InputDirection);
 
+        //text appear
         StopCoroutine(AcceptEffect());
         StartCoroutine(AcceptEffect());
         
