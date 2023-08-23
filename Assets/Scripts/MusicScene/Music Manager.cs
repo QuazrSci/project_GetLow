@@ -10,7 +10,8 @@ public class MusicManager : MonoBehaviour
     public static MusicManager instance { get; private set; }
     //DONT USE INSTANCE IN AWAKE FUNCTION (in other scripts)
 
-    [SerializeField] private GameInfoManager gameInfoMngr;
+    [SerializeField] public GameInfoManager gameInfoMngr;
+    [SerializeField] private MusicSlider musicSlider;
     [SerializeField] private Sprite[] buttonSprites; // List of sprites to use for the buttons
 
     public GameObject[] triggers;
@@ -27,6 +28,7 @@ public class MusicManager : MonoBehaviour
     public float triggrs_speed = 10;
     private float resSpeedmult; //multiplier of the speed based on a resolution of the screen
     private string[] lines;
+    [SerializeField] public int musicDelayMilSec = 3000;
 
     void Awake()
     {
@@ -39,6 +41,8 @@ public class MusicManager : MonoBehaviour
 
         //find music Clip
         AudioSrc = GetComponent<AudioSource>();
+        AudioSrc.volume = 0;
+
         for(int i=0; i < gameInfoMngr.musicClips.Length; i++)
         {
             if(gameInfoMngr.musicClips[i].name == gameInfoMngr.songName) 
@@ -71,7 +75,7 @@ public class MusicManager : MonoBehaviour
 
         finScreen.gameObject.SetActive(false);
 
-        MusicDelay(2000);
+        MusicDelay(musicDelayMilSec);
     }
 
     public void Message(string text, int r, int g, int b)
@@ -100,15 +104,11 @@ public class MusicManager : MonoBehaviour
 
     async void MusicDelay(int waitMilSec)
     {
-        await Task.Delay(waitMilSec/3);
-
-        await Task.Delay(waitMilSec/3);
-
-        await Task.Delay(waitMilSec/3);
-        
-
+        await Task.Delay(waitMilSec);
         //start music
+        StartCoroutine(musicFadeStart());
         StartCoroutine(Music());
+        StartCoroutine(musicSlider.StartCountdown());
     }
 
     IEnumerator Music()
@@ -175,7 +175,7 @@ public class MusicManager : MonoBehaviour
             //if line is a time
             else if (line_int > 0 && line_int < 10)
             {
-                yield return new WaitForSecondsRealtime(line_int);
+                yield return new WaitForSeconds(line_int);
             }
             else Debug.LogError("Something is wrong with music profile!");
             i++;
@@ -213,6 +213,15 @@ public class MusicManager : MonoBehaviour
         while(AudioSrc.volume > music_fade_min)
         {
             AudioSrc.volume -= Time.deltaTime;
+            yield return null;
+        }
+    }
+    
+    IEnumerator musicFadeStart()
+    {
+        while(AudioSrc.volume < 1)
+        {
+            AudioSrc.volume += Time.deltaTime;
             yield return null;
         }
     }

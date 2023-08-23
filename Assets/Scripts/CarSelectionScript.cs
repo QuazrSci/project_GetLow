@@ -18,11 +18,9 @@ public class CarSelectionScript : MonoBehaviour
     private float[] car_position;
     private int current;
 
-    [SerializeField]
-    private int disBetween;
-    [SerializeField]
-    private AnimationCurve lerpCurve;
-
+    [SerializeField] private int disBetween;
+    [SerializeField] private AnimationCurve lerpCurve;
+    [SerializeField] private float rot_y = 135;
     void Awake()
     {
         cars = new Transform[transform.childCount];
@@ -35,6 +33,8 @@ public class CarSelectionScript : MonoBehaviour
         int min = -(cars.Length / 2 * disBetween);
         for(int i = 0; i < cars.Length; i++)
         {
+            cars[i].localEulerAngles = new Vector3(0,rot_y,0);
+            cars[i].Find("Body").GetComponent<Rigidbody>().isKinematic=true;
             car_position[i] = min + (disBetween*i);
             cars[i].position = new Vector3(min + (disBetween*i), transform.position.y, transform.position.z);
         }

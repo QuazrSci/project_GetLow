@@ -14,7 +14,9 @@ public class Hydraulics : MonoBehaviour
 
     private float wheel_min_y;
 
-    private void Start() {
+    private void Start() 
+    {  
+        transform.position = Vector3.zero;
         car_body = transform.GetChild(0).transform.Find("Body");
         wheels = new Transform[4];
         hooks = new Transform[4];
@@ -22,7 +24,8 @@ public class Hydraulics : MonoBehaviour
         {
             wheels[i] = transform.GetChild(0).transform.Find("Wheels").GetChild(i);
             hooks[i] = transform.GetChild(0).transform.Find("Body").transform.Find("Hooks").GetChild(i);
-            hooks[i].position = wheels[i].position;
+            hooks[i].position = wheels[i].position; //hook the hooks to the wheels
+            hooks[i].GetComponent<FixedJoint>().connectedBody = car_body.GetComponent<Rigidbody>(); // connect rigidbody to hooks
         }
         wheel_min_y = wheels[0].position.y;
     }
@@ -38,7 +41,9 @@ public class Hydraulics : MonoBehaviour
         {
             float y_pos = hooks[i].position.y - maxDistance;
             y_pos = Mathf.Clamp(y_pos,wheel_min_y,5);
+            //rotation
             wheels[i].localEulerAngles = new Vector3(wheels[i].rotation.x,180 + car_body.localEulerAngles.y, wheels[i].rotation.z);
+            //position
             wheels[i].position = new Vector3(hooks[i].position.x, y_pos, hooks[i].position.z);
         }
     

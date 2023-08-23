@@ -48,9 +48,9 @@ public class SceneLoadManager : MonoBehaviour
     {
         GetComponent<Canvas>().sortingOrder = 2;
         //confirm buttons
-        confirm_yes = confirmExitCanvas.transform.Find("Yes").GetComponent<Button>();
+        //confirm_yes = confirmExitCanvas.transform.Find("Yes").GetComponent<Button>();
         confirm_yes.onClick.AddListener(LoadScene);
-        confirm_no = confirmExitCanvas.transform.Find("No").GetComponent<Button>();
+        //confirm_no = confirmExitCanvas.transform.Find("No").GetComponent<Button>();
         confirm_no.onClick.AddListener(ConfirmOff);
 
         confirmExitCanvas.gameObject.SetActive(false);
@@ -93,7 +93,7 @@ public class SceneLoadManager : MonoBehaviour
             t = lerpCurve.Evaluate(t);
 
             confirmExitCanvas.alpha = Mathf.Lerp(from, to, t);
-            timeElapsed += Time.deltaTime;
+            timeElapsed += Time.unscaledDeltaTime;
             yield return null;
         }
         confirmExitCanvas.alpha = to;
@@ -106,6 +106,7 @@ public class SceneLoadManager : MonoBehaviour
 
     public async void LoadScene()
     {
+        Time.timeScale = 1; //timeScale == 1;
         //start loading the scene
         AsyncOperation scene =  SceneManager.LoadSceneAsync(sceneName);
         scene.allowSceneActivation = false;
@@ -123,7 +124,7 @@ public class SceneLoadManager : MonoBehaviour
         {
             await Task.Delay(4);
             loadScreenCanvas.alpha = alpha;
-            i += Time.deltaTime * fadeTime;
+            i += Time.unscaledDeltaTime * fadeTime;
             alpha += i;
         }
         loadScreenCanvas.alpha = 1;
@@ -146,7 +147,7 @@ public class SceneLoadManager : MonoBehaviour
         {
             await Task.Delay(4);
             loadScreenCanvas.alpha = alpha;
-            i += Time.deltaTime * fadeTime;
+            i += Time.unscaledDeltaTime * fadeTime;
             alpha -= i;
         }
 
