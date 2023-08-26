@@ -4,20 +4,17 @@ using UnityEngine.UI;
 public class ChangeSong : MonoBehaviour
 {
     Button btn;
-    [SerializeField]
-    private GameInfoManager gameInfoMngr;
-    [SerializeField]
-    private string song;
+    [SerializeField] private GameInfoManager gameInfoMngr;
+    [SerializeField] private string song;
 
     void Start()
     {
         btn = GetComponent<Button>();
-        btn.onClick.AddListener(chngSong);
+        btn.onClick.AddListener(ChngSong);
     }
 
-    void chngSong()
+    void ChngSong()
     {
         gameInfoMngr.songName = song;
     }
-  
 }

@@ -11,6 +11,7 @@ public class MusicManager : MonoBehaviour
     //DONT USE INSTANCE IN AWAKE FUNCTION (in other scripts)
 
     [SerializeField] public GameInfoManager gameInfoMngr;
+    private PointsManager pointMngr;
     [SerializeField] private MusicSlider musicSlider;
     [SerializeField] private Sprite[] buttonSprites; // List of sprites to use for the buttons
 
@@ -56,6 +57,8 @@ public class MusicManager : MonoBehaviour
         messageObj.alpha = 0;
         resSpeedmult = Screen.currentResolution.width / 400;
         triggrs_speed *= resSpeedmult;
+
+        pointMngr = GetComponent<PointsManager>();
     }
 
     void Start()
@@ -188,6 +191,9 @@ public class MusicManager : MonoBehaviour
 
     async void stopMusic()
     {   
+        //save info
+        pointMngr.SaveSongStats(gameInfoMngr.songName);
+        //stop music
         bool is_done = false;
         int count;
         while(!is_done)

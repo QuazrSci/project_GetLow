@@ -1,5 +1,5 @@
 {
-    "name": "mobile_input",
+    "name": "InputSys",
     "maps": [
         {
             "name": "MainAction",
@@ -11,7 +11,7 @@
                     "id": "3c1d7db4-325c-46d6-bd17-9b3aa8a6b656",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
@@ -28,7 +28,7 @@
                 {
                     "name": "",
                     "id": "ae2e92ea-779f-435f-8f32-2e8765ccbc19",
-                    "path": "<Touchscreen>/primaryTouch/indirectTouch",
+                    "path": "<Touchscreen>/Press",
                     "interactions": "",
                     "processors": "",
                     "groups": "defaultMobile",

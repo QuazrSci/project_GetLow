@@ -1,24 +1,21 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 public class PointsManager : MonoBehaviour
 {
-    [NonSerialized]
-    public int pointBank;
-    [NonSerialized]
-    public int count_missed;
-    [NonSerialized]
-    public int count_ok;
-    [NonSerialized]
-    public int count_good;
-    [NonSerialized]
-    public int count_amazing;
-    [NonSerialized]
-    public int count_god;
-    
+    private SaveStats saveStats;
 
+    [NonSerialized] public int pointBank;
+    [NonSerialized] public int count_missed;
+    [NonSerialized] public int count_ok;
+    [NonSerialized] public int count_good;
+    [NonSerialized] public int count_amazing;
+    [NonSerialized] public int count_god;
+    
     void Start()
     {
+        saveStats = SaveStats.instance;
         count_missed = 0;
         pointBank = 0;
         count_ok = 0;
@@ -51,5 +48,10 @@ public class PointsManager : MonoBehaviour
                 Debug.LogError("Misspeled quality in the addPoint() function");
                 break;
         }
+    }
+
+    public void SaveSongStats(string song)
+    {
+        saveStats.saveinfo(song, pointBank,count_missed,count_ok,count_good,count_amazing,count_god);
     }
 }
